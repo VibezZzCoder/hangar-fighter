@@ -8,10 +8,10 @@ https://vibezzzcoder.github.io/hangar-fighter/
 
 ## Status
 
-This is a stable, published prototype. Versus Mode and Boss Rush Mode are implemented,
-and the self-contained release build is live at the link above. Automated QA is green on
-the current build, which has also been played and accepted on macOS Safari, on iOS, and
-as an iOS home-screen web app. There is no known coding blocker.
+A published prototype. The 2026-11-10 release is a full polish overhaul: new combat
+system, CPU opponent, HUD, menus, sound effects and touch controls, with the music and
+announcer line kept. Versus Mode and Boss Rush Mode are both complete, and the automated
+checks pass on the self-contained release build served at the link above.
 
 ## Screenshots
 
@@ -23,62 +23,66 @@ as an iOS home-screen web app. There is no known coding blocker.
 
 ## Features
 
-- Main Mode Select with `Versus Mode` and `Boss Rush Mode`
-- Versus Mode uses best-of-three rounds
-- Boss Rush uses best-of-three rounds per boss, so a clean run is six rounds
-- Three scenarios: Joint Maintenance, PT Showdown, and Formal Face-Off
-- Scenario-specific fighter pairings and stage backgrounds
-- Boss Rush single-player run: MTI vs Karateka, SecFo, and AI Robot
-- Per-stage music, layered sound effects, and an announcer line at the start of a match
-- Victory celebration after clearing the final boss, skippable with a tap or `Enter`
-- Local two-player keyboard controls
-- Optional CPU control for Player 2
-- Player 2 CPU support remains available for Versus play (and is enabled by default on phones/tablets)
-- Mobile touch controls for phone and tablet browsers
-- Punch, kick, jump, crouch, hitstun, knockback, health bars, and win state
-- Debug hitbox toggle for tuning and testing
+- **Versus**: pick any two fighters and any of six stages; play the CPU (Easy / Normal /
+  Hard) or a second player on the same keyboard. Best of three rounds.
+- **Boss Rush**: take the MTI (or any fighter you have unlocked) through three bosses, each a
+  best-of-three. Beating a boss unlocks her as a playable fighter.
+- Combos (punch, punch, kick), dashes, guard breaks, counter hits, knockdowns, and a super
+  move once your meter is full.
+- A CPU that reacts, punishes and spaces instead of pressing random buttons.
+- Per-stage music, an announcer line at the start of a match, and a full set of sound
+  effects.
+- Touch controls for phones in portrait and landscape; keyboard controls on desktop.
+- Options (music and effects volume, CPU level, screen shake) that are remembered.
+- Runs as one self-contained HTML file with no downloads or accounts.
 
-## Game Modes
+## How to play
 
-- `Versus Mode`: pick a scenario and play best-of-three rounds with local PvP or CPU Player 2.
-- `Boss Rush Mode`: single-player challenge where MTI fights three bosses in sequence -- Karateka, SecFo, then AI Robot. Each boss is its own best-of-three match: win two rounds to move on, lose two and the run is over. A full clean run is six rounds.
-- Controls and core combat actions are shared across both modes.
+- **Combo**: punch, punch, kick. Each hit chains into the next when it lands.
+- **Dash**: double-tap left or right. Dash in, then attack out of it.
+- **Block**: hold block to stop hits. A blocked kick can be punished.
+- **Guard break**: punch a blocking opponent from point-blank range.
+- **Duck**: crouch under high kicks, then hit back while they recover.
+- **Jump in**: a jump kick that lands leads straight into a ground combo.
+- **Super**: landing and taking hits fills the bar under your health. When it reads SUPER,
+  press punch and kick together (or the SUPER button on a phone).
+- **Counter**: hit an opponent out of their own attack for extra damage.
 
 ## Controls
 
 Player 1:
 
-- `A` / `D` = move
+- `A` / `D` = move (double-tap to dash)
 - `W` = jump
 - `S` = crouch
+- `R` = block
 - `F` = punch
 - `G` = kick
-- `R` = block
+- `T` = super (or `F` + `G` together)
 
 Player 2:
 
-- `Left` / `Right` = move
+- `Left` / `Right` = move (double-tap to dash)
 - `Up` = jump
 - `Down` = crouch
+- `O` = block
 - `K` = punch
 - `L` = kick
-- `O` = block
+- `P` = super (or `K` + `L` together)
 
 System:
 
-- `C` = toggle CPU for Player 2
-- `H` = toggle hitbox debug
-- `Space` = pause
-- `Enter` = reset, and confirms menu and round-end prompts
+- `Esc` or `Space` = pause (resume, how to play, options, restart, change fighters, main menu)
+- Menus: arrows or `WASD` to move, left/right to change a value, `Enter` to confirm, `Esc` to go back
+- Player 2 is the CPU by default; switch `Opponent` to `Player 2` on the fight setup screen for two players
+- `H` = show hit and hurt boxes (a tuning aid)
 
-Mobile:
+Phones and tablets:
 
-- Touch controls appear automatically.
-- `JUMP LEFT` and `JUMP RIGHT` buttons provide mobile-friendly diagonal jumps.
-- Portrait and landscape are both playable.
-- Landscape gives the roomiest view when the browser supports it cleanly.
-- For the best phone experience, use landscape and choose `Add to Home Screen` for fullscreen play.
-- Player 2 CPU is enabled by default on phones/tablets.
+- Touch controls appear automatically, in portrait and in landscape.
+- The direction pad is one surface: roll your thumb across it without lifting.
+- The top row of the pad jumps (straight up, or diagonally).
+- For the roomiest view use landscape, and `Add to Home Screen` for fullscreen play.
 
 ## Local Play
 
