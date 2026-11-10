@@ -73,9 +73,18 @@ Player 2:
 System:
 
 - `Esc` or `Space` = pause (resume, how to play, options, restart, change fighters, main menu)
-- Menus: arrows or `WASD` to move, left/right to change a value, `Enter` to confirm, `Esc` to go back
-- Player 2 is the CPU by default; switch `Opponent` to `Player 2` on the fight setup screen for two players
+- Menus: up/down to move, left/right to change a value, `Enter` to confirm, `Esc` to go back
+- Player 2 is a Normal-level CPU by default; change `Opponent` on the fight setup screen for an easier or harder CPU, or for a second player
 - `H` = show hit and hurt boxes (a tuning aid)
+
+Game controllers (Xbox and PlayStation style pads, tested in Chrome):
+
+- The first controller is Player 1 and the second is Player 2.
+- D-pad or left stick = move, jump, crouch (double-tap to dash)
+- `X` / `Square` = punch, `A` / `Cross` = kick
+- `B` / `Circle` or a shoulder button = block
+- `Y` / `Triangle` or a trigger = super
+- `Start` = pause. In menus, `A` / `Cross` confirms and `B` / `Circle` goes back.
 
 Phones and tablets:
 
