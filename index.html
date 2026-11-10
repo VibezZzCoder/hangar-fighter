@@ -747,9 +747,9 @@ See the LICENSE file for the full license text.
     .picker-label {
       grid-area: label;
       text-align: center;
-      font-size: 0.66rem;
+      font-size: 0.76rem;
       letter-spacing: 0.2em;
-      color: var(--muted);
+      color: var(--bone);
     }
 
     .picker.p1 .picker-label { color: var(--amber); }
@@ -762,6 +762,8 @@ See the LICENSE file for the full license text.
       align-items: center;
       min-height: 1.6rem;
       min-width: 0;
+      padding: 0 6px;
+      box-sizing: border-box;
       color: var(--bone);
       overflow: hidden;
     }
@@ -774,10 +776,14 @@ See the LICENSE file for the full license text.
       max-width: 100%;
     }
 
+    /* The arrows are drawn as small chamfered buttons so a picker reads as
+       something to press, not as a caption. */
     .picker .arrow {
+      --cut: 6px;
       appearance: none;
       border: 0;
-      background: transparent;
+      background: var(--steel);
+      clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
       width: 2.5rem;
       height: 2.1rem;
       display: flex;
@@ -805,19 +811,48 @@ See the LICENSE file for the full license text.
     .picker .arrow:active,
     .picker .arrow:focus-visible {
       color: var(--gold);
+      background: var(--steel-hi);
       outline: none;
     }
 
     @media (hover: hover) {
-      .picker .arrow:hover { color: var(--gold); }
+      .picker .arrow:hover { color: var(--gold); background: var(--steel-hi); }
     }
 
     /* Featured matchup chips. */
     .featured {
       display: flex;
       justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+    }
+
+    .featured-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--bone);
+    }
+
+    .featured-list {
+      display: flex;
+      justify-content: center;
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    /* Heading and one line of help above the fight setup controls. */
+    .dock-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .dock p.dock-hint {
+      font-size: 0.88rem;
+      color: var(--bone);
     }
 
     .scenario-option {
@@ -1203,7 +1238,8 @@ See the LICENSE file for the full license text.
     /* Phone, landscape: the canvas fills the screen and the pads sit over
        the gutters and the lower corners of the stage. */
     @media (hover: none) and (orientation: landscape), (pointer: coarse) and (orientation: landscape), (max-width: 920px) and (orientation: landscape) {
-      .featured {
+      .featured,
+      .dock-head {
         display: none;
       }
 
@@ -1293,9 +1329,18 @@ See the LICENSE file for the full license text.
       }
     }
 
+    /* Portrait phones without room to spare: the heading and help line go
+       first, so Random and Back never drop below the fold. */
+    @media (orientation: portrait) and (max-height: 800px) {
+      .dock-head {
+        display: none;
+      }
+    }
+
     /* Short portrait phones: the featured chips give way to the pickers. */
     @media (orientation: portrait) and (max-height: 720px) {
-      .featured {
+      .featured,
+      .dock-head {
         display: none;
       }
 
@@ -1483,7 +1528,14 @@ See the LICENSE file for the full license text.
 
       <div class="screen is-hidden" id="scenarioSelect" aria-label="Fight setup">
         <div class="dock">
-          <div class="featured" id="scenarioOptions"></div>
+          <div class="dock-head">
+            <h2><span data-stencil="SET UP YOUR FIGHT" data-size="17" data-tracking="1"></span></h2>
+            <p class="dock-hint">Use the arrows to change either fighter or the stage, or start from a ready-made matchup.</p>
+          </div>
+          <div class="featured">
+            <span class="featured-label">Ready-made matchups</span>
+            <div class="featured-list" id="scenarioOptions"></div>
+          </div>
           <div class="pickers">
             <div class="picker p1" data-nav data-cycle="p1" tabindex="0" role="group" aria-label="Player 1 fighter">
               <span class="picker-label">PLAYER 1</span>
@@ -2052,8 +2104,30 @@ See the LICENSE file for the full license text.
     SPRITES["service-dress"].block.drawHeight = 223.1;
 
     addOptionalPose(SPRITES["boss-security-forces"], "boss-security-forces", "specialShot", -1, 246, { specialShot: 273 });
-    // Passing frame of the walk (one foot under the body). Fighters that have
-    // it walk contact > pass > contact > pass instead of flipping two frames.
+    // Walk cycles. `walk1` is a full stride for everyone and `walk3` is the
+    // passing frame (one foot under the body, the other lifted). `walk2` is a
+    // second stride with the legs swapped for the MTI and the bosses, but a
+    // flat feet-together stand for the Versus cast, so they leave it out:
+    // stride > pass > stride > pass reads as walking, while going through the
+    // stand made the lifted leg look like a kick. One frame lasts as long as
+    // the body takes to travel half a stride (about 46px at walking speed),
+    // which is what keeps the planted foot from skating.
+    const WALK_FRAME_RATE = 1.7;
+    const WALK_CYCLE_DEFAULT = ["walk1", "walk2"];
+    const WALK_CYCLE_STRIDE_PASS = ["walk1", "walk3"];
+    const WALK_CYCLE_FULL = ["walk1", "walk3", "walk2", "walk3"];
+    const WALK_CYCLES = {
+      flight: WALK_CYCLE_STRIDE_PASS,
+      ocp: WALK_CYCLE_STRIDE_PASS,
+      "pt-summer": WALK_CYCLE_STRIDE_PASS,
+      "pt-winter": WALK_CYCLE_STRIDE_PASS,
+      "blues-skirt": WALK_CYCLE_STRIDE_PASS,
+      mti: WALK_CYCLE_FULL,
+      "boss-karate-camo": WALK_CYCLE_FULL,
+      "boss-security-forces": WALK_CYCLE_FULL,
+      "boss-ai-robot": WALK_CYCLE_FULL
+    };
+
     addOptionalPose(SPRITES.mti, "mti", "walk3", 1, 243);
     addOptionalPose(SPRITES["boss-karate-camo"], "boss-karate-camo", "walk3", -1, 246);
     addOptionalPose(SPRITES["flight"], "flight", "walk3", 1, 214);
@@ -7352,10 +7426,8 @@ See the LICENSE file for the full license text.
         return state === "specialShotRecovery" ? "punchRecovery" : "specialShot";
       }
       if (state === "walk") {
-        if (SPRITES[fighter.outfit] && SPRITES[fighter.outfit].walk3) {
-          return ["walk1", "walk3", "walk2", "walk3"][Math.floor(fighter.walkTime * 3.4) % 4];
-        }
-        return Math.floor(fighter.walkTime * 1.7) % 2 === 0 ? "walk1" : "walk2";
+        const cycle = WALK_CYCLES[fighter.outfit] || WALK_CYCLE_DEFAULT;
+        return cycle[Math.floor(fighter.walkTime * WALK_FRAME_RATE) % cycle.length];
       }
       if (state === "dash") return "walk2";
       if (state === "backdash") return "walk1";
@@ -7398,6 +7470,54 @@ See the LICENSE file for the full license text.
       return surface;
     }
 
+    // Breathing for the standing pose. Each fighter has one standing picture,
+    // so instead of sliding the whole picture up and down (which made the feet
+    // drift on the floor) the chest and head rise by one or two rows of the
+    // art while the legs stay exactly where they are. The taller copies are
+    // built once per sprite and reused; they behave like ordinary sprites, so
+    // the tint, flash and silhouette passes work on them unchanged.
+    const BREATH_ROWS = 2;
+    function getBreathSprite(sprite, rows) {
+      if (!rows || !sprite.image || !sprite.image.naturalHeight) return sprite;
+      if (!sprite.breath) sprite.breath = {};
+      let copy = sprite.breath[rows];
+      if (copy) return copy;
+      const image = sprite.image;
+      const w = image.naturalWidth;
+      const h = image.naturalHeight;
+      const feet = sprite.anchorY * h;
+      const chest = Math.round(feet * 0.36);
+      const waist = Math.round(feet * 0.5);
+      const surface = document.createElement("canvas");
+      surface.width = w;
+      surface.height = h + rows;
+      surface.naturalWidth = w;
+      surface.naturalHeight = h + rows;
+      const g = surface.getContext("2d");
+      g.imageSmoothingEnabled = false;
+      // Head and shoulders move up as they are; the chest-to-waist band is
+      // stretched by the extra rows; everything from the waist down is copied
+      // to the same distance from the bottom, so the feet do not move.
+      g.drawImage(image, 0, 0, w, chest, 0, 0, w, chest);
+      g.drawImage(image, 0, chest, w, waist - chest, 0, chest, w, waist - chest + rows);
+      g.drawImage(image, 0, waist, w, h - waist, 0, waist + rows, w, h - waist);
+      copy = {
+        image: surface,
+        nativeFacing: sprite.nativeFacing,
+        anchorX: sprite.anchorX,
+        anchorY: (feet + rows) / (h + rows),
+        drawHeight: sprite.drawHeight * (h + rows) / h,
+        loaded: true
+      };
+      sprite.breath[rows] = copy;
+      return copy;
+    }
+
+    function getBreathRows(fighter) {
+      if (fighter.state !== "idle") return 0;
+      return Math.round((Math.sin(fighter.walkTime * 6) * 0.5 + 0.5) * BREATH_ROWS);
+    }
+
     function drawSpriteImage(context, sprite, source, x, y, facing, scaleX = 1, scaleY = 1, rotation = 0) {
       const image = sprite.image;
       const drawH = sprite.drawHeight;
@@ -7425,9 +7545,15 @@ See the LICENSE file for the full license text.
       let rotation = 0;
 
       if (state === "idle") {
-        oy += Math.sin(fighter.walkTime * 4) * 1.4;
+        // Standing fighters breathe instead of bobbing: see getBreathSprite.
       } else if (state === "walk") {
-        oy -= Math.abs(Math.sin(fighter.walkTime * 1.7 * Math.PI)) * 2.2;
+        if (WALK_CYCLES[fighter.outfit]) {
+          // Rise through the passing frame, settle on the stride.
+          const phase = (fighter.walkTime * WALK_FRAME_RATE) % 2;
+          oy -= (0.5 - 0.5 * Math.cos(Math.PI * (phase - 0.5))) * 2.2;
+        } else {
+          oy -= Math.abs(Math.sin(fighter.walkTime * 1.7 * Math.PI)) * 2.2;
+        }
       } else if (state === "hitstun") {
         if (fighter.grounded) {
           ox -= fighter.facing * 6;
@@ -7500,8 +7626,9 @@ See the LICENSE file for the full license text.
     }
 
     function drawFighter(context, fighter) {
-      const sprite = getSprite(fighter, resolvePoseKey(fighter));
-      if (!sprite) return;
+      const baseSprite = getSprite(fighter, resolvePoseKey(fighter));
+      if (!baseSprite) return;
+      const sprite = getBreathSprite(baseSprite, getBreathRows(fighter));
       const view = getFighterPresentation(fighter);
       const look = getStageLook();
 
